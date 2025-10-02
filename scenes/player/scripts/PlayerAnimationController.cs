@@ -1,52 +1,36 @@
 using Godot;
+using System;
 
-public class PlayerAnimationController
+public sealed class PlayerAnimationController
 {
-	private AnimatedSprite2D sprite;
-
-	public enum AnimState { IdleDown, IdleSide, IdleUp, Walk, WalkUp }
+	private readonly AnimatedSprite2D sprite;
 
 	public PlayerAnimationController(AnimatedSprite2D spriteNode)
 	{
-		sprite = spriteNode;
+		sprite = spriteNode ?? throw new ArgumentNullException(nameof(spriteNode));
 	}
 
-	public void PlayWalk(Vector2 dir)
+	public void PlayWalk(Vector2 direction)
 	{
-		if (dir.X != 0)
+		if (direction.X != 0)
 		{
 			sprite.Play("walk_side");
-			sprite.FlipH = dir.X < 0;
+			sprite.FlipH = direction.X < 0;
+			return;
 		}
-		else if (dir.Y < 0)
-		{
-			sprite.Play("walk_up");
-		}
-		else if (dir.Y > 0)
-		{
-			sprite.Play("walk_down");
-		}
+
+		sprite.Play(direction.Y < 0 ? "walk_up" : "walk_down");
 	}
 
-	public void PlayIdle(Vector2 lastDir)
+	public void PlayIdle(Vector2 lastDirection)
 	{
-		if (lastDir.X > 0)
+		if (lastDirection.X != 0)
 		{
 			sprite.Play("idle_side");
-			sprite.FlipH = false;
+			sprite.FlipH = lastDirection.X < 0;
+			return;
 		}
-		else if (lastDir.X < 0)
-		{
-			sprite.Play("idle_side");
-			sprite.FlipH = true;
-		}
-		else if (lastDir.Y < 0)
-		{
-			sprite.Play("idle_up");
-		}
-		else
-		{
-			sprite.Play("idle_down");
-		}
+
+		sprite.Play(lastDirection.Y < 0 ? "idle_up" : "idle_down");
 	}
 }

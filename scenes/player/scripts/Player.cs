@@ -19,27 +19,38 @@ public partial class Player : Area2D
 	{
 		Hide();
 		screenSize = GetViewportRect().Size;
-		var sprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
-		collision = GetNode<CollisionShape2D>("CollisionShape2D");
-		animationController = new PlayerAnimationController(sprite);
+		CacheNodes();
 		BodyEntered += OnBodyEntered;
 	}
 
 	public override void _Process(double delta)
 	{
-		Vector2 dir = PlayerInput.GetDirection();
-		Vector2 velocity = dir * Speed;
+		Vector2 direction = PlayerInput.GetDirection();
+		UpdateAnimation(direction);
+		Move(direction * Speed, delta);
+	}
 
-		if (dir != Vector2.Zero)
-		{
-			lastDirection = dir;
-			animationController.PlayWalk(dir);
-		}
-		else
+	private void CacheNodes()
+	{
+		var sprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+		collision = GetNode<CollisionShape2D>("CollisionShape2D");
+		animationController = new PlayerAnimationController(sprite);
+	}
+
+	private void UpdateAnimation(Vector2 direction)
+	{
+		if (direction == Vector2.Zero)
 		{
 			animationController.PlayIdle(lastDirection);
+			return;
 		}
 
+		lastDirection = direction;
+		animationController.PlayWalk(direction);
+	}
+
+	private void Move(Vector2 velocity, double delta)
+	{
 		Position += velocity * (float)delta;
 		Position = new Vector2(
 			x: Math.Clamp(Position.X, 0, screenSize.X),

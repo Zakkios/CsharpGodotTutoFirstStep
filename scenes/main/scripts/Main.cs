@@ -1,32 +1,64 @@
 using Godot;
-using System;
-
 
 public partial class Main : Node
 {
+	private const float MobBaseSpeed = 150f;
+	private const float MobSpeedPerPoint = 10f;
+
+	private PackedScene mobScene;
+
 	[Export]
-	public PackedScene MobScene;
-	public int Score = 0;
+	public PackedScene MobScene
+	{
+		get => mobScene;
+		set
+		{
+			mobScene = value;
+			UpdateMobSpawner();
+		}
+	}
+
+	public int Score { get; private set; }
 
 	private Player player;
 	private Timer scoreTimer;
 	private Timer mobTimer;
 	private Timer startTimer;
 	private Marker2D startPosition;
+	private PathFollow2D mobSpawnLocation;
+	private MobSpawner mobSpawner;
 
 	public override void _Ready()
+	{
+		CacheNodes();
+		UpdateMobSpawner();
+		ConnectSignals();
+		NewGame();
+	}
+
+	private void CacheNodes()
 	{
 		player = GetNode<Player>("Player");
 		scoreTimer = GetNode<Timer>("ScoreTimer");
 		mobTimer = GetNode<Timer>("MobTimer");
 		startTimer = GetNode<Timer>("StartTimer");
 		startPosition = GetNode<Marker2D>("StartPosition");
-		player.Hit += GameOver;
-		startTimer.Timeout += StartTimerTimeout;
-		scoreTimer.Timeout += ScoreTimerTimeout;
-		mobTimer.Timeout += MobTimerTimeout;
+		mobSpawnLocation = GetNode<PathFollow2D>("MobPath/MobSpawnLocation");
+	}
 
-		NewGame();
+	private void ConnectSignals()
+	{
+		player.Hit += GameOver;
+		startTimer.Timeout += OnStartTimerTimeout;
+		scoreTimer.Timeout += OnScoreTimerTimeout;
+		mobTimer.Timeout += OnMobTimerTimeout;
+	}
+
+	public void NewGame()
+	{
+		ResetScore();
+		player.Start(startPosition.Position);
+		startTimer.Start();
 	}
 
 	public void GameOver()
@@ -35,50 +67,51 @@ public partial class Main : Node
 		mobTimer.Stop();
 	}
 
-	public void NewGame()
+	private void ResetScore()
 	{
 		Score = 0;
-		player.Start(startPosition.Position);
-		startTimer.Start();
 	}
 
-	private void StartTimerTimeout()
+	private void UpdateMobSpawner()
+	{
+		if (mobSpawnLocation == null)
+		{
+			return;
+		}
+
+		mobSpawner = new MobSpawner(mobScene, mobSpawnLocation, MobBaseSpeed, MobSpeedPerPoint);
+	}
+
+	private void OnStartTimerTimeout()
 	{
 		mobTimer.Start();
 		scoreTimer.Start();
 	}
 
-	private void ScoreTimerTimeout()
+	private void OnScoreTimerTimeout()
 	{
 		Score++;
 	}
 
-	private void MobTimerTimeout()
+	private void OnMobTimerTimeout()
 	{
-		// Crée un mob à partir de la scène préfabriquée
-		var mob = (Mob)MobScene.Instantiate();
-
-		// Choisit un point aléatoire sur le chemin
-		var mobSpawnLocation = GetNode<PathFollow2D>("MobPath/MobSpawnLocation");
-		mobSpawnLocation.ProgressRatio = GD.Randf();
-
-		// Calcule la direction de sortie (rotation du PathFollow2D + 90°)
-		var direction = mobSpawnLocation.Rotation + Mathf.Pi / 2;
-
-		// Place le mob à cet endroit
-		mob.Position = mobSpawnLocation.GlobalPosition;
-
-		// Donne une direction au mob
-		var velocity = new Vector2((float)Math.Cos(direction), (float)Math.Sin(direction));
-
-		// Multiplie par une vitesse aléatoire, dépendant du score
-		velocity *= (150 + Score * 10);
-
-		// Applique la vélocité au mob
-		mob.LinearVelocity = velocity;
-
-		// Ajoute le mob dans la scène
-		AddChild(mob);
+		SpawnMob();
 	}
 
+	private void SpawnMob()
+	{
+		if (mobSpawner == null)
+		{
+			GD.PushWarning("MobSpawner is not initialised.");
+			return;
+		}
+
+		var mob = mobSpawner.Spawn(Score);
+		if (mob == null)
+		{
+			return;
+		}
+
+		AddChild(mob);
+	}
 }
