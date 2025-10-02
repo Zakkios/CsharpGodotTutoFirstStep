@@ -55,13 +55,30 @@ public partial class Main : Node
 
 	private void MobTimerTimeout()
 	{
+		// Crée un mob à partir de la scène préfabriquée
 		var mob = (Mob)MobScene.Instantiate();
-		var mobSpawnLocation = GetNode<PathFollow2D>("MobSpawnLocation");
+
+		// Choisit un point aléatoire sur le chemin
+		var mobSpawnLocation = GetNode<PathFollow2D>("MobPath/MobSpawnLocation");
 		mobSpawnLocation.ProgressRatio = GD.Randf();
+
+		// Calcule la direction de sortie (rotation du PathFollow2D + 90°)
 		var direction = mobSpawnLocation.Rotation + Mathf.Pi / 2;
-		mob.Position = mobSpawnLocation.Position;
-		var velocity = new Vector2((float)Math.Cos(direction), (float)Math.Sin(direction)) * (150 + Score * 10);
-		mob.LinearVelocity = velocity.Rotated(direction);
+
+		// Place le mob à cet endroit
+		mob.Position = mobSpawnLocation.GlobalPosition;
+
+		// Donne une direction au mob
+		var velocity = new Vector2((float)Math.Cos(direction), (float)Math.Sin(direction));
+
+		// Multiplie par une vitesse aléatoire, dépendant du score
+		velocity *= (150 + Score * 10);
+
+		// Applique la vélocité au mob
+		mob.LinearVelocity = velocity;
+
+		// Ajoute le mob dans la scène
 		AddChild(mob);
 	}
+
 }

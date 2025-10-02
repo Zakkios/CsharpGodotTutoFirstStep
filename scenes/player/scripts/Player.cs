@@ -49,12 +49,9 @@ public partial class Player : Area2D
 
 	private void OnBodyEntered(Node2D body)
 	{
-		if (body.IsInGroup("enemies"))
-		{
-			Hide();
-			EmitSignal(SignalName.Hit);
-			collision.Disabled = true;
-		}
+		Hide();
+		EmitSignal(SignalName.Hit);
+		collision.Disabled = true;
 	}
 
 	public void Start(Vector2 pos)
