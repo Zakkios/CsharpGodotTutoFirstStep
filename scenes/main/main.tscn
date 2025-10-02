@@ -33,4 +33,3 @@ curve = SubResource("Curve2D_ow5a4")
 
 [node name="MobSpawnLocation" type="PathFollow2D" parent="MobPath"]
 
-[connection signal="Hit" from="Player" to="." method="_game_over"]

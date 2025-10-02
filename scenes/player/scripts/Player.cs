@@ -13,7 +13,6 @@ public partial class Player : Area2D
 	private Vector2 lastDirection = Vector2.Down;
 
 	private PlayerAnimationController animationController;
-
 	private CollisionShape2D collision;
 
 	public override void _Ready()
@@ -23,8 +22,7 @@ public partial class Player : Area2D
 		var sprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
 		collision = GetNode<CollisionShape2D>("CollisionShape2D");
 		animationController = new PlayerAnimationController(sprite);
-		var notifier = GetNode<Area2D>("Player");
-		notifier.BodyEntered += OnBodyEntered;
+		BodyEntered += OnBodyEntered;
 	}
 
 	public override void _Process(double delta)
@@ -49,7 +47,7 @@ public partial class Player : Area2D
 		);
 	}
 
-	public void OnBodyEntered(Node2D body)
+	private void OnBodyEntered(Node2D body)
 	{
 		if (body.IsInGroup("enemies"))
 		{

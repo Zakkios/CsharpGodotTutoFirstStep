@@ -12,7 +12,7 @@ public partial class Mob : RigidBody2D
 		sprite.Play(mobTypes[GD.Randi() % mobTypes.Length]);
 
 		var notifier = GetNode<VisibleOnScreenNotifier2D>("VisibleOnScreenNotifier2D");
-		notifier.ScreenEntered += OnScreenExited;
+		notifier.ScreenExited += OnScreenExited;
 	}
 
 	private void OnScreenExited()
