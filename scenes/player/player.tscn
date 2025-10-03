@@ -73,8 +73,8 @@ radius = 6.0
 height = 18.0
 
 [node name="Player" type="Area2D"]
-scale = Vector2(5, 5)
 script = ExtResource("1_qlg0r")
+Speed = 120
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]

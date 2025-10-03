@@ -2,7 +2,7 @@ using Godot;
 
 public partial class Main : Node
 {
-	private const float MobBaseSpeed = 150f;
+	private const float MobBaseSpeed = 50f;
 	private const float MobSpeedPerPoint = 10f;
 
 	private PackedScene mobScene;
@@ -20,6 +20,7 @@ public partial class Main : Node
 
 	public int Score { get; private set; }
 
+	private Hud hud;
 	private Player player;
 	private Timer scoreTimer;
 	private Timer mobTimer;
@@ -33,11 +34,11 @@ public partial class Main : Node
 		CacheNodes();
 		UpdateMobSpawner();
 		ConnectSignals();
-		NewGame();
 	}
 
 	private void CacheNodes()
 	{
+		hud = GetNode<Hud>("HUD");
 		player = GetNode<Player>("Player");
 		scoreTimer = GetNode<Timer>("ScoreTimer");
 		mobTimer = GetNode<Timer>("MobTimer");
@@ -48,6 +49,7 @@ public partial class Main : Node
 
 	private void ConnectSignals()
 	{
+		hud.StartGame += NewGame;
 		player.Hit += GameOver;
 		startTimer.Timeout += OnStartTimerTimeout;
 		scoreTimer.Timeout += OnScoreTimerTimeout;
@@ -59,12 +61,16 @@ public partial class Main : Node
 		ResetScore();
 		player.Start(startPosition.Position);
 		startTimer.Start();
+		hud.UpdateScore(Score);
+		hud.ShowMessage("Prêt ?");
+		GetTree().CreateTimer(1.5).Timeout += () => hud.ShowMessage("C'est parti !");
 	}
 
-	public void GameOver()
+	public async void GameOver()
 	{
 		scoreTimer.Stop();
 		mobTimer.Stop();
+		await hud.ShowGameOver();
 	}
 
 	private void ResetScore()
@@ -91,6 +97,7 @@ public partial class Main : Node
 	private void OnScoreTimerTimeout()
 	{
 		Score++;
+		hud.UpdateScore(Score);
 	}
 
 	private void OnMobTimerTimeout()
