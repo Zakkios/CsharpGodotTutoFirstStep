@@ -3,7 +3,7 @@ using Godot;
 public partial class Main : Node
 {
 	private const float MobBaseSpeed = 50f;
-	private const float MobSpeedPerPoint = 10f;
+	private const float MobSpeedPerPoint = 2f;
 
 	private PackedScene mobScene;
 
@@ -23,6 +23,7 @@ public partial class Main : Node
 	private Hud hud;
 	private Player player;
 	private Timer scoreTimer;
+	private bool isGameRunning;
 	private Timer mobTimer;
 	private Timer startTimer;
 	private Marker2D startPosition;
@@ -62,17 +63,25 @@ public partial class Main : Node
 
 	public void NewGame()
 	{
+		isGameRunning = true;
 		music.Play();
 		ResetScore();
 		player.Start(startPosition.Position);
 		startTimer.Start();
 		hud.UpdateScore(Score);
 		hud.ShowMessage("Prêt ?");
-		GetTree().CreateTimer(1.5).Timeout += () => hud.ShowMessage("C'est parti !");
+		GetTree().CreateTimer(1.5).Timeout += () =>
+		{
+			if (isGameRunning)
+			{
+				hud.ShowMessage("C'est parti !");
+			}
+		};
 	}
 
 	public async void GameOver()
 	{
+		isGameRunning = false;
 		music.Stop();
 		gameOverSound.Play();
 		scoreTimer.Stop();

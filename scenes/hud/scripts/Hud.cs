@@ -1,5 +1,4 @@
 using Godot;
-using System;
 using System.Threading.Tasks;
 
 public partial class Hud : CanvasLayer
@@ -35,6 +34,10 @@ public partial class Hud : CanvasLayer
 
 	public async Task ShowGameOver()
 	{
+		if (!messageTimer.IsStopped())
+		{
+			messageTimer.Stop();
+		}
 		messageLabel.Text = "Game over !\nScore : " + scoreLabel.Text.Split(": ")[1];
 		messageLabel.Show();
 
