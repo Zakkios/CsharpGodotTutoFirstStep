@@ -3,7 +3,7 @@ using System;
 
 public partial class Player : Area2D
 {
-	[Export]
+	[Export(PropertyHint.Range, "50,300")]
 	public int Speed = 400;
 
 	[Signal]
@@ -66,7 +66,7 @@ public partial class Player : Area2D
 	{
 		Hide();
 		EmitSignal(SignalName.Hit);
-		collision.Disabled = true;
+		collision.SetDeferred("disabled", true);
 	}
 
 	public void Start(Vector2 pos)
