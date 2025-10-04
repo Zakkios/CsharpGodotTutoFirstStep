@@ -27,6 +27,8 @@ public partial class Main : Node
 	private Timer startTimer;
 	private Marker2D startPosition;
 	private PathFollow2D mobSpawnLocation;
+	private AudioStreamPlayer music;
+	private AudioStreamPlayer gameOverSound;
 	private MobSpawner mobSpawner;
 
 	public override void _Ready()
@@ -45,6 +47,8 @@ public partial class Main : Node
 		startTimer = GetNode<Timer>("StartTimer");
 		startPosition = GetNode<Marker2D>("StartPosition");
 		mobSpawnLocation = GetNode<PathFollow2D>("MobPath/MobSpawnLocation");
+		music = GetNode<AudioStreamPlayer>("Music");
+		gameOverSound = GetNode<AudioStreamPlayer>("GameOverSound");
 	}
 
 	private void ConnectSignals()
@@ -58,6 +62,7 @@ public partial class Main : Node
 
 	public void NewGame()
 	{
+		music.Play();
 		ResetScore();
 		player.Start(startPosition.Position);
 		startTimer.Start();
@@ -68,6 +73,8 @@ public partial class Main : Node
 
 	public async void GameOver()
 	{
+		music.Stop();
+		gameOverSound.Play();
 		scoreTimer.Stop();
 		mobTimer.Stop();
 		await hud.ShowGameOver();
