@@ -1,6 +1,8 @@
 using Godot;
 using System;
 
+namespace Survivor;
+
 public sealed class PlayerAnimationController
 {
 	private readonly AnimatedSprite2D sprite;

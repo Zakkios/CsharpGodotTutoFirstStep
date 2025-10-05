@@ -1,6 +1,9 @@
-using Godot;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Godot;
+
+namespace Survivor;
 
 public partial class Hud : CanvasLayer
 {
@@ -15,18 +18,10 @@ public partial class Hud : CanvasLayer
 
 	public override void _Ready()
 	{
-		scoreLabel = GetNode<Label>("ScoreLabel");
-		messageLabel = GetNode<Label>("MessageLabel");
-		highScoresLabel = GetNode<Label>("HighScoresLabel");
-		messageTimer = GetNode<Timer>("MessageTimer");
-		startButton = GetNode<Button>("StartButton");
-
-		startButton.Pressed += OnStartButtonPressed;
-		messageTimer.Timeout += () => messageLabel.Hide();
-
-		messageLabel.Text = "Esquive les monstres !";
-		scoreLabel.Text = "Score: 0";
-		ShowHighScores(ScoreManager.Instance.Scores);
+		CacheNodes();
+		BindSignals();
+		InitializeDefaultText();
+		RefreshHighScores();
 	}
 
 	public void ShowMessage(string message)
@@ -36,35 +31,9 @@ public partial class Hud : CanvasLayer
 		messageTimer.Start();
 	}
 
-	public void ShowHighScores(List<int> scores)
+	public void ShowHighScores(IReadOnlyList<int> scores)
 	{
-		string text = "🏆 Records :\n";
-		if (scores.Count == 0)
-		{
-			text += "Aucun score";
-			highScoresLabel.Text = text;
-			return;
-		}
-		for (int i = 0; i < scores.Count && i < ScoreManager.MaxScores; i++)
-		{
-			switch (i)
-			{
-				case 0:
-					text += "🥇 ";
-					break;
-				case 1:
-					text += "🥈 ";
-					break;
-				case 2:
-					text += "🥉 ";
-					break;
-				default:
-					text += $"{i + 1}. ";
-					break;
-			}
-			text += $"{scores[i]}\n";
-		}
-		highScoresLabel.Text = text;
+		highScoresLabel.Text = HighScoreFormatter.Format(scores, ScoreManager.MaxScores);
 		highScoresLabel.Show();
 	}
 
@@ -83,7 +52,7 @@ public partial class Hud : CanvasLayer
 		messageLabel.Show();
 
 		await ToSignal(GetTree().CreateTimer(2.0), SceneTreeTimer.SignalName.Timeout);
-		startButton.Text = "Réessayer";
+		startButton.Text = "Reessayer";
 		startButton.Show();
 	}
 
@@ -92,10 +61,42 @@ public partial class Hud : CanvasLayer
 		scoreLabel.Text = $"Score: {score}";
 	}
 
+	private void CacheNodes()
+	{
+		scoreLabel = GetNode<Label>("ScoreLabel");
+		messageLabel = GetNode<Label>("MessageLabel");
+		highScoresLabel = GetNode<Label>("HighScoresLabel");
+		messageTimer = GetNode<Timer>("MessageTimer");
+		startButton = GetNode<Button>("StartButton");
+	}
+
+	private void BindSignals()
+	{
+		startButton.Pressed += OnStartButtonPressed;
+		messageTimer.Timeout += HideMessage;
+	}
+
+	private void InitializeDefaultText()
+	{
+		messageLabel.Text = "Esquive les monstres !";
+		scoreLabel.Text = "Score: 0";
+	}
+
+	private void RefreshHighScores()
+	{
+		IReadOnlyList<int> scores = ScoreManager.Instance?.Scores ?? Array.Empty<int>();
+		ShowHighScores(scores);
+	}
+
 	private void OnStartButtonPressed()
 	{
 		startButton.Hide();
 		messageLabel.Hide();
 		EmitSignal(SignalName.StartGame);
+	}
+
+	private void HideMessage()
+	{
+		messageLabel.Hide();
 	}
 }

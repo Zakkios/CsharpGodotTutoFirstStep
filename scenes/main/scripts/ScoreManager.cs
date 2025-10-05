@@ -1,71 +1,75 @@
-using Godot;
 using System.Collections.Generic;
-using System.Text.Json;
-using System.IO;
 using System.Linq;
-using System;
+using Godot;
+
+#nullable enable
+
+namespace Survivor;
 
 public partial class ScoreManager : Node
 {
-    public static ScoreManager Instance;
+    public static ScoreManager Instance = null!;
     private const string SavePath = "user://scores.json";
     public const int MaxScores = 3;
 
-    public List<int> Scores = new();
+    private readonly List<int> scores = new();
+    private ScoreRepository repository = null!;
+
+    public IReadOnlyList<int> Scores => scores;
 
     public override void _Ready()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            LoadScores();
-        }
-        else
+        if (Instance != null)
         {
             QueueFree();
+            return;
         }
+
+        Instance = this;
+        repository = new ScoreRepository(SavePath);
+        LoadScores();
     }
 
     public void AddScore(int newScore)
     {
         GD.Print($"New score: {newScore}");
-        Scores.Add(newScore);
-        Scores = Scores.OrderByDescending(s => s).Take(MaxScores).ToList();
+        scores.Add(newScore);
+        scores.Sort((a, b) => b.CompareTo(a));
+
+        if (scores.Count > MaxScores)
+        {
+            scores.RemoveRange(MaxScores, scores.Count - MaxScores);
+        }
+
         SaveScores();
     }
 
-    public void SaveScores()
+    private void SaveScores()
     {
-        try
+        if (repository.TrySave(scores, out string? error))
         {
-            var json = JsonSerializer.Serialize(Scores);
-            File.WriteAllText(ProjectSettings.GlobalizePath(SavePath), json);
+            return;
         }
-        catch (System.Exception e)
+
+        if (!string.IsNullOrEmpty(error))
         {
-            GD.PushError($"Erreur lors de la sauvegarde des scores : {e.Message}");
+            GD.PushError($"Erreur lors de la sauvegarde des scores : {error}");
         }
     }
 
-    public void LoadScores()
+    private void LoadScores()
     {
-        try
+        if (repository.TryLoad(out List<int> loadedScores, out string? error))
         {
-            string path = ProjectSettings.GlobalizePath(SavePath);
-            if (File.Exists(path))
-            {
-                var json = File.ReadAllText(path);
-                Scores = JsonSerializer.Deserialize<List<int>>(json) ?? new List<int>();
-            }
-            else
-            {
-                Scores = new List<int>();
-            }
+            scores.Clear();
+            scores.AddRange(loadedScores.OrderByDescending(score => score).Take(MaxScores));
+            return;
         }
-        catch (System.Exception e)
+
+        scores.Clear();
+        if (!string.IsNullOrEmpty(error))
         {
-            GD.PushError($"Erreur lors du chargement des scores : {e.Message}");
-            Scores = new List<int>();
+            GD.PushError($"Erreur lors du chargement des scores : {error}");
         }
     }
 }

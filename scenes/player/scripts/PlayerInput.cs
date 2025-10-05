@@ -1,5 +1,7 @@
 using Godot;
 
+namespace Survivor;
+
 public static class PlayerInput
 {
 	public static Vector2 GetDirection()

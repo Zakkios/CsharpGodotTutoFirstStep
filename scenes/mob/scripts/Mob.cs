@@ -1,5 +1,7 @@
 using Godot;
 
+namespace Survivor;
+
 public partial class Mob : RigidBody2D
 {
 	private AnimatedSprite2D sprite;
@@ -20,7 +22,7 @@ public partial class Mob : RigidBody2D
 
 	private void PlayRandomAnimation()
 	{
-		var animationNames = sprite.SpriteFrames.GetAnimationNames();
+		string[] animationNames = sprite.SpriteFrames.GetAnimationNames();
 		if (animationNames.Length == 0)
 		{
 			return;
