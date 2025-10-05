@@ -1,4 +1,5 @@
 using Godot;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public partial class Hud : CanvasLayer
@@ -8,6 +9,7 @@ public partial class Hud : CanvasLayer
 
 	private Label scoreLabel;
 	private Label messageLabel;
+	private Label highScoresLabel;
 	private Timer messageTimer;
 	private Button startButton;
 
@@ -15,6 +17,7 @@ public partial class Hud : CanvasLayer
 	{
 		scoreLabel = GetNode<Label>("ScoreLabel");
 		messageLabel = GetNode<Label>("MessageLabel");
+		highScoresLabel = GetNode<Label>("HighScoresLabel");
 		messageTimer = GetNode<Timer>("MessageTimer");
 		startButton = GetNode<Button>("StartButton");
 
@@ -23,6 +26,7 @@ public partial class Hud : CanvasLayer
 
 		messageLabel.Text = "Esquive les monstres !";
 		scoreLabel.Text = "Score: 0";
+		ShowHighScores(ScoreManager.Instance.Scores);
 	}
 
 	public void ShowMessage(string message)
@@ -30,6 +34,43 @@ public partial class Hud : CanvasLayer
 		messageLabel.Text = message;
 		messageLabel.Show();
 		messageTimer.Start();
+	}
+
+	public void ShowHighScores(List<int> scores)
+	{
+		string text = "🏆 Records :\n";
+		if (scores.Count == 0)
+		{
+			text += "Aucun score";
+			highScoresLabel.Text = text;
+			return;
+		}
+		for (int i = 0; i < scores.Count && i < ScoreManager.MaxScores; i++)
+		{
+			switch (i)
+			{
+				case 0:
+					text += "🥇 ";
+					break;
+				case 1:
+					text += "🥈 ";
+					break;
+				case 2:
+					text += "🥉 ";
+					break;
+				default:
+					text += $"{i + 1}. ";
+					break;
+			}
+			text += $"{scores[i]}\n";
+		}
+		highScoresLabel.Text = text;
+		highScoresLabel.Show();
+	}
+
+	public void HideHighScores()
+	{
+		highScoresLabel.Hide();
 	}
 
 	public async Task ShowGameOver()

@@ -24,6 +24,7 @@ public partial class Main : Node
 	private Player player;
 	private Timer scoreTimer;
 	private bool isGameRunning;
+	private bool isGameOver;
 	private Timer mobTimer;
 	private Timer startTimer;
 	private Marker2D startPosition;
@@ -64,10 +65,12 @@ public partial class Main : Node
 	public void NewGame()
 	{
 		isGameRunning = true;
+		isGameOver = false;
 		music.Play();
 		ResetScore();
 		player.Start(startPosition.Position);
 		startTimer.Start();
+		hud.HideHighScores();
 		hud.UpdateScore(Score);
 		hud.ShowMessage("Prêt ?");
 		GetTree().CreateTimer(1.5).Timeout += () =>
@@ -81,12 +84,20 @@ public partial class Main : Node
 
 	public async void GameOver()
 	{
+		if (isGameOver)
+		{
+			return;
+		}
+		isGameOver = true;
+
 		isGameRunning = false;
 		music.Stop();
 		gameOverSound.Play();
 		scoreTimer.Stop();
 		mobTimer.Stop();
 		await hud.ShowGameOver();
+		ScoreManager.Instance.AddScore(Score);
+		hud.ShowHighScores(ScoreManager.Instance.Scores);
 	}
 
 	private void ResetScore()
