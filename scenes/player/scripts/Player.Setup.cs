@@ -8,13 +8,19 @@ public partial class Player
     {
         AnimatedSprite2D sprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
         collision = GetNode<CollisionShape2D>("CollisionShape2D");
+        Area2D hitBox = GetNode<Area2D>("Hitbox");
         animationController = new PlayerAnimationController(sprite);
+
+        hitBox.BodyEntered += OnEnemyEntered;
     }
 
-    private void OnBodyEntered(Node2D body)
+    private void OnEnemyEntered(Node2D body)
     {
-        Hide();
-        EmitSignal(SignalName.Hit);
-        collision.SetDeferred("disabled", true);
+        if (body.IsInGroup("Enemy"))
+        {
+            Hide();
+            EmitSignal(SignalName.Hit);
+            collision.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+        }
     }
 }

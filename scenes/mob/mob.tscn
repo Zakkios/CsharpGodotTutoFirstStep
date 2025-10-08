@@ -48,7 +48,7 @@ animations = [{
 radius = 4.2
 height = 16.4
 
-[node name="Mob" type="RigidBody2D"]
+[node name="Mob" type="RigidBody2D" groups=["Enemy"]]
 collision_mask = 0
 gravity_scale = 0.0
 script = ExtResource("1_fhx6o")

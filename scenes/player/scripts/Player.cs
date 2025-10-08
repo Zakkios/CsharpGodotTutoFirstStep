@@ -2,7 +2,7 @@ using Godot;
 
 namespace Survivor;
 
-public partial class Player : Area2D
+public partial class Player : CharacterBody2D
 {
 	[Export(PropertyHint.Range, "50,300")]
 	public int Speed = 400;
@@ -20,7 +20,6 @@ public partial class Player : Area2D
 		Hide();
 		screenSize = GetViewportRect().Size;
 		CacheNodes();
-		BodyEntered += OnBodyEntered;
 	}
 
 	public override void _Process(double delta)
@@ -32,7 +31,7 @@ public partial class Player : Area2D
 		}
 
 		UpdateAnimation(direction);
-		Move(direction * Speed, delta);
+		Move(direction * Speed);  // ← Move() appellera MoveAndSlide()
 	}
 
 	public void Start(Vector2 pos)

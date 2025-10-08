@@ -30,6 +30,10 @@ window/stretch/mode="canvas_items"
 
 project/assembly_name="Survivor"
 
+[global_group]
+
+Enemy=""
+
 [input]
 
 move_right={
