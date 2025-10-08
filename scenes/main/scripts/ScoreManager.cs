@@ -32,7 +32,6 @@ public partial class ScoreManager : Node
 
     public void AddScore(int newScore)
     {
-        GD.Print($"New score: {newScore}");
         scores.Add(newScore);
         scores.Sort((a, b) => b.CompareTo(a));
 
