@@ -72,9 +72,11 @@ animations = [{
 size = Vector2(8, 6)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qek5x"]
-size = Vector2(10, 15)
+size = Vector2(10, 8)
 
 [node name="Player" type="CharacterBody2D"]
+y_sort_enabled = true
+collision_layer = 2
 script = ExtResource("1_qlg0r")
 Speed = 100
 metadata/_edit_group_ = true
@@ -89,7 +91,8 @@ position = Vector2(0, 3)
 shape = SubResource("RectangleShape2D_0owmy")
 
 [node name="Hitbox" type="Area2D" parent="."]
+collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
-position = Vector2(0, -0.5)
+position = Vector2(0, 3)
 shape = SubResource("RectangleShape2D_qek5x")

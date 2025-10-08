@@ -48,20 +48,18 @@ animations = [{
 radius = 4.2
 height = 16.4
 
-[node name="Mob" type="RigidBody2D" groups=["Enemy"]]
-collision_mask = 0
-gravity_scale = 0.0
+[node name="Mob" type="CharacterBody2D" groups=["Enemy"]]
+y_sort_enabled = true
+collision_layer = 4
 script = ExtResource("1_fhx6o")
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_iba42")
-animation = &"skeleton"
+animation = &"slime"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_uqhch")
 
 [node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
-
-[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]

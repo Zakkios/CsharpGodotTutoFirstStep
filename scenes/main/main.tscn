@@ -8,6 +8,34 @@
 [ext_resource type="AudioStream" uid="uid://bkv7b5ksxdkof" path="res://art/gameover.wav" id="6_ow5a4"]
 [ext_resource type="Texture2D" uid="uid://dvgrvsdaehs32" path="res://art/Tilemap.png" id="7_hujxm"]
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_yyfjg"]
+texture = ExtResource("7_hujxm")
+2:0/0 = 0
+2:1/0 = 0
+2:2/0 = 0
+2:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-6, -6, 7, -6, 7, 6, -6, 6)
+4:2/0 = 0
+0:3/size_in_atlas = Vector2i(2, 2)
+0:3/0 = 0
+0:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-13, 1, 15, 0, 15, 15, -15, 15)
+3:3/0 = 0
+2:4/size_in_atlas = Vector2i(2, 1)
+2:4/0 = 0
+2:4/0/physics_layer_0/polygon_0/points = PackedVector2Array(-15, -4, 15, -4, 15, 7, -15, 7)
+4:4/0 = 0
+0:0/size_in_atlas = Vector2i(2, 3)
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-13, 8, 14, 8, 14, 21, -13, 21)
+3:0/size_in_atlas = Vector2i(2, 2)
+3:0/0 = 0
+3:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-12, 0, 15, 0, 15, 15, -15, 15, -15, 8, -12, 8)
+3:2/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_b1x3f"]
+physics_layer_0/collision_layer = 1
+navigation_layer_0/layers = 1
+sources/0 = SubResource("TileSetAtlasSource_yyfjg")
+
 [sub_resource type="Curve2D" id="Curve2D_ow5a4"]
 _data = {
 "points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 360, 0, 0, 0, 0, 0, 360, 180, 0, 0, 0, 0, 0, 180, 0, 0, 0, 0, 0, 0)
@@ -31,33 +59,8 @@ tags = {
 }
 loop = true
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_yyfjg"]
-texture = ExtResource("7_hujxm")
-2:0/0 = 0
-2:1/0 = 0
-2:2/0 = 0
-2:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-6, -6, 7, -6, 7, 6, -6, 6)
-4:2/0 = 0
-0:3/size_in_atlas = Vector2i(2, 2)
-0:3/0 = 0
-0:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-13, 1, 15, 0, 15, 15, -15, 15)
-3:3/0 = 0
-2:4/size_in_atlas = Vector2i(2, 1)
-2:4/0 = 0
-2:4/0/physics_layer_0/polygon_0/points = PackedVector2Array(-15, -4, 15, -4, 15, 7, -15, 7)
-4:4/0 = 0
-0:0/size_in_atlas = Vector2i(2, 3)
-0:0/0 = 0
-0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-13, 8, 14, 8, 14, 21, -13, 21)
-3:0/size_in_atlas = Vector2i(2, 2)
-3:0/0 = 0
-3:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-12, 0, 15, 0, 15, 15, -15, 15, -15, 8, -12, 8)
-
-[sub_resource type="TileSet" id="TileSet_b1x3f"]
-physics_layer_0/collision_layer = 1
-sources/0 = SubResource("TileSetAtlasSource_yyfjg")
-
-[node name="Main" type="Node"]
+[node name="Main" type="Node2D"]
+y_sort_enabled = true
 script = ExtResource("1_k2fmo")
 MobScene = ExtResource("2_l3cfh")
 
@@ -67,6 +70,12 @@ offset_right = 360.0
 offset_bottom = 180.0
 texture = ExtResource("3_ow5a4")
 stretch_mode = 1
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+y_sort_enabled = true
+texture_filter = 1
+tile_map_data = PackedByteArray("AAARAAQAAAADAAAAAAA=")
+tile_set = SubResource("TileSet_b1x3f")
 
 [node name="Player" parent="." instance=ExtResource("3_6q06x")]
 
@@ -94,10 +103,3 @@ stream = SubResource("AudioStreamOggVorbis_hujxm")
 
 [node name="GameOverSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_ow5a4")
-
-[node name="TileMapLayer" type="TileMapLayer" parent="."]
-texture_filter = 1
-tile_map_data = PackedByteArray("AAAQAAUAAAACAAIAAAA=")
-tile_set = SubResource("TileSet_b1x3f")
-
-[connection signal="Hit" from="Player" to="." method="_on_player_hit"]

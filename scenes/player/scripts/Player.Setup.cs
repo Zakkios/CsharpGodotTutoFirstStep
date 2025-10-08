@@ -16,11 +16,13 @@ public partial class Player
 
     private void OnEnemyEntered(Node2D body)
     {
-        if (body.IsInGroup("Enemy"))
+        if (!body.IsInGroup("Enemy"))
         {
-            Hide();
-            EmitSignal(SignalName.Hit);
-            collision.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+            return;
         }
+
+        Hide();
+        EmitSignal(SignalName.Hit);
+        collision.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
     }
 }

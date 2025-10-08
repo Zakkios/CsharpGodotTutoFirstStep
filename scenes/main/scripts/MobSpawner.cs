@@ -33,7 +33,7 @@ public sealed class MobSpawner
 
         float direction = spawnLocation.Rotation + Mathf.Pi / 2f;
         Vector2 velocity = new Vector2(Mathf.Cos(direction), Mathf.Sin(direction));
-        mob.LinearVelocity = velocity * (baseSpeed + score * speedPerPoint);
+        mob.Velocity = velocity * (baseSpeed + score * speedPerPoint);
 
         return mob;
     }

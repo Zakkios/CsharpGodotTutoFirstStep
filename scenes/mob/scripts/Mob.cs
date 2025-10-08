@@ -2,7 +2,7 @@ using Godot;
 
 namespace Survivor;
 
-public partial class Mob : RigidBody2D
+public partial class Mob : CharacterBody2D
 {
 	private AnimatedSprite2D sprite;
 	private VisibleOnScreenNotifier2D notifier;
@@ -12,6 +12,11 @@ public partial class Mob : RigidBody2D
 		CacheNodes();
 		PlayRandomAnimation();
 		notifier.ScreenExited += OnScreenExited;
+	}
+
+	public override void _PhysicsProcess(double delta)
+	{
+		MoveAndSlide();
 	}
 
 	private void CacheNodes()
